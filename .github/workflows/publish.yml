@@ -23,7 +23,7 @@ jobs:
     env:
       VERSION: ${{ inputs.version }}
       PACKAGE_ID: Assured
-      NUGET_USER: 0x2E757
+      NUGET_USER: '0x2E757'
     steps:
       - uses: actions/checkout@v5
 
