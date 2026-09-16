@@ -18,6 +18,7 @@ Standard .NET SDK workflow from the repository root:
 
 ```
 dotnet build
+dotnet test
 dotnet pack
 ```
 
@@ -25,7 +26,7 @@ Package metadata, target frameworks and language versions are declared in each p
 
 ## Contributing
 
-Warnings are errors, and every public member needs XML documentation; the build enforces both.
+Warnings are errors, and every public member needs XML documentation; the build enforces both. Changes in library behavior come with tests in [`Assured.Tests`](Assured.Tests).
 
 ## License
 

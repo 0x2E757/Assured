@@ -1,10 +1,10 @@
 # Working in this repository
 
-Assured is a .NET library: `Result<TValue, TError>` with explicit state, published to nuget.org. Each shippable package lives in a folder of the same name and carries its own `README.md`; the root `README.md` only describes the repository.
+Assured is a .NET library: `Result<TValue, TError>` with explicit state, published to nuget.org. Each shippable package lives in a folder of the same name and carries its own `README.md`; its tests live in a sibling folder with the `.Tests` suffix. The root `README.md` only describes the repository.
 
 ## Building
 
-Run from the repository root: `dotnet build`, `dotnet pack`. Warnings are errors and every public member needs an XML documentation comment; both are enforced by the build, so a change that introduces either is not done until the build is clean.
+Run from the repository root: `dotnet build`, `dotnet test`, `dotnet pack`. Warnings are errors and every public member needs an XML documentation comment; both are enforced by the build, so a change that introduces either is not done until the build is clean. A change in library behavior comes with tests, and is not done until `dotnet test` passes.
 
 Target frameworks, language versions and package metadata are declared in the project files. Read them there instead of assuming.
 
@@ -15,7 +15,7 @@ Target frameworks, language versions and package metadata are declared in the pr
 - **The library is general-purpose .NET, designed so that it also works in Unity, whose compiler lags behind current C#.** Check `LangVersion` in the project file before using newer syntax; if a construct is not available there, do not use it.
 - **`Version` in the project file is a local placeholder and is never edited.** The release version is entered when the publish workflow is run; it also creates the tag and the GitHub release. Never push packages or create tags by hand.
 - **API compatibility is checked at publish time** against the latest version on nuget.org. Breaking changes are allowed only when the new version permits them under SemVer.
-- **Files use CRLF line endings** and no trailing whitespace.
+- **Files use CRLF line endings**, enforced by `.gitattributes`, and no trailing whitespace.
 
 ## Git
 
@@ -31,7 +31,7 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `ci`, `chore`
 
 Scopes:
 
-- `lib` — the library under `Assured/`
+- `lib` — the library under `Assured/` and its tests
 - `meta` — repository rules and conventions, such as this file
 - `deps` — dependencies, .NET SDK version, toolchain
 - `repo` — top-level layout, solution, `.gitignore`, file moves
@@ -40,6 +40,7 @@ Scopes:
 feat(lib): add Result and Success types
 fix(lib): keep undefined state through Map and Bind
 docs(lib): add api overview to package readme
+test(lib): cover undefined state in combinators
 ci: publish on manual dispatch
 meta: define commit convention
 repo: add solution and gitignore
