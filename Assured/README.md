@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/0x2E757/Assured/main/assets/logo-512.png" alt="Assured" width="128"></p>
+
 # Assured
 
 `Result<TValue, TError>` for C#: a value or an error, never both, never neither by accident.

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+<defs><linearGradient id="assured-v-dark" gradientUnits="userSpaceOnUse" x1="24" y1="17" x2="46" y2="32"><stop offset="0" stop-color="#2F8F63"/><stop offset="1" stop-color="#C6C2BA"/></linearGradient><linearGradient id="assured-e-dark" gradientUnits="userSpaceOnUse" x1="24" y1="47" x2="46" y2="32"><stop offset="0" stop-color="#D6604D"/><stop offset="1" stop-color="#C6C2BA"/></linearGradient></defs>
+
+<path fill="#2B2925" d="M29.4 3.5Q32 2 34.6 3.5L55.38 15.5Q57.98 17 57.98 20L57.98 44Q57.98 47 55.38 48.5L34.6 60.5Q32 62 29.4 60.5L8.62 48.5Q6.02 47 6.02 44L6.02 20Q6.02 17 8.62 15.5Z"/>
+<g transform="translate(32 32) scale(0.702) translate(-32 -32)">
+<path d="M41.8 32H50" stroke="#C6C2BA" stroke-width="6"/>
+<path d="M21.3 17H28C36 17 38 32 46 32" fill="none" stroke="url(#assured-v-dark)" stroke-width="6"/>
+<path d="M21.3 47H28C36 47 38 32 46 32" fill="none" stroke="url(#assured-e-dark)" stroke-width="6"/>
+<path fill="#2F8F63" d="M24 17L19.5 24.79L10.5 24.79L6 17L10.5 9.21L19.5 9.21Z"/>
+<path fill="#D6604D" d="M24 47L19.5 54.79L10.5 54.79L6 47L10.5 39.21L19.5 39.21Z"/>
+<path fill="#C6C2BA" d="M62.5 32L58.75 38.5L51.25 38.5L47.5 32L51.25 25.5L58.75 25.5Z"/>
+</g>
+</svg>

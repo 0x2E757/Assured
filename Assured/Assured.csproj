@@ -17,6 +17,7 @@
     <PackageTags>result;either;error-handling;railway;functional;unity;zero-allocation</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>logo-128.png</PackageIcon>
     <PackageProjectUrl>https://github.com/0x2E757/Assured</PackageProjectUrl>
     <RepositoryUrl>https://github.com/0x2E757/Assured</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -36,6 +37,7 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="../assets/logo-128.png" Pack="true" PackagePath="/" Visible="false" />
   </ItemGroup>
 
 </Project>

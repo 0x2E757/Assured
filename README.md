@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" alt="Assured" width="128"></p>
+
 # Assured
 
 Typed results for C#: `Result<TValue, TError>` with explicit state.
