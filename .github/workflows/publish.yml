@@ -1,0 +1,88 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version to publish (semver, without the leading v, e.g. 0.1.0 or 0.2.0-rc.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: nuget
+    env:
+      VERSION: ${{ inputs.version }}
+      PACKAGE_ID: Assured
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validate branch, version and tag
+        run: |
+          if [[ "$GITHUB_REF_NAME" != "main" ]]; then
+            echo "Releases are published from 'main' only (requested from '$GITHUB_REF_NAME')." >&2
+            exit 1
+          fi
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "'$VERSION' is not a semver version (expected X.Y.Z or X.Y.Z-suffix)." >&2
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" > /dev/null; then
+            echo "Tag v$VERSION already exists; pick a new version." >&2
+            exit 1
+          fi
+
+      # The API baseline is the latest stable version already on nuget.org. Package validation compares the
+      # new public API against it and fails on breaking changes, unless the requested version permits them
+      # under SemVer: a new major, or a new minor while still on 0.x.
+      - name: Determine API baseline
+        run: |
+          id="${PACKAGE_ID,,}"
+          versions=$(curl -sS -f "https://api.nuget.org/v3-flatcontainer/$id/index.json" | grep -oE '"[0-9][^"]*"' | tr -d '"' || true)
+          baseline=$(printf '%s\n' "$versions" | grep -v -- '-' | sort -V | tail -n 1)
+          if [[ -z "$baseline" ]]; then
+            echo "No published stable version found; skipping API compatibility check."
+            exit 0
+          fi
+          IFS=. read -r new_major new_minor _ <<< "${VERSION%%-*}"
+          IFS=. read -r base_major base_minor _ <<< "$baseline"
+          if (( new_major > base_major )) || (( new_major == 0 && new_minor > base_minor )); then
+            echo "Version $VERSION may break API relative to $baseline under SemVer; skipping API compatibility check."
+            exit 0
+          fi
+          echo "Validating API compatibility against $baseline."
+          echo "PackageValidationBaselineVersion=$baseline" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore -c Release -p:Version="$VERSION" -p:ContinuousIntegrationBuild=true
+
+      - name: Pack
+        run: dotnet pack --no-build -c Release -p:Version="$VERSION" -o artifacts
+
+      - name: Push to nuget.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push "artifacts/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Tag and GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--target "$GITHUB_SHA" --title "v$VERSION" --generate-notes)
+          if [[ "$VERSION" == *-* ]]; then args+=(--prerelease); fi
+          gh release create "v$VERSION" artifacts/*.*nupkg "${args[@]}"
