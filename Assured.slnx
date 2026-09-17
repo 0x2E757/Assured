@@ -1,4 +1,6 @@
 <Solution>
   <Project Path="Assured/Assured.csproj" />
   <Project Path="Assured.Tests/Assured.Tests.csproj" />
+  <Project Path="Assured.Analyzers/Assured.Analyzers.csproj" />
+  <Project Path="Assured.Analyzers.Tests/Assured.Analyzers.Tests.csproj" />
 </Solution>

@@ -11,6 +11,7 @@ General-purpose .NET, designed so that it also works in Unity: the code stays wi
 Each package lives in a folder of the same name, and that folder's `README.md` is the package's documentation.
 
 - [`Assured`](Assured/README.md) — the library.
+- [`Assured.Analyzers`](Assured.Analyzers/README.md) — Roslyn analyzers that report unchecked unwraps and allocating delegates in code that uses the library.
 
 ## Building
 
@@ -26,7 +27,7 @@ Package metadata, target frameworks and language versions are declared in each p
 
 ## Contributing
 
-Warnings are errors, and every public member needs XML documentation; the build enforces both. Changes in library behavior come with tests in [`Assured.Tests`](Assured.Tests).
+Warnings are errors, and every public member needs XML documentation; the build enforces both. Changes in behavior come with tests in the package's `.Tests` project.
 
 ## License
 
