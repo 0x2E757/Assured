@@ -48,5 +48,16 @@ namespace Assured
                 _ => default,
             };
         }
+
+        /// <summary>Passes the error to <paramref name="next"/> and returns its result; a value or undefined state is passed through.</summary>
+        public Result<TValue, TOut> BindError<TOut>(Func<TError, Result<TValue, TOut>> next)
+        {
+            return _state switch
+            {
+                State.HasValue => Result<TValue, TOut>.Value(_value!),
+                State.HasError => next(_error!),
+                _ => default,
+            };
+        }
     }
 }

@@ -27,7 +27,7 @@ Grouped by what you want to do; see the XML documentation for exact signatures.
 | Take the contents, checked | `TryUnwrapValue(out v)`, `TryUnwrapError(out e)` |
 | Take the contents, or a substitute | `ValueOr(fallback)`, `ValueOrGenerate(() => fallback)` |
 | Handle both cases in one expression | `Match(onValue, onError)` |
-| Transform without unwrapping | `Map(f)` for the value, `MapError(f)` for the error, `Bind(f)` to chain a call that returns another `Result` |
+| Transform without unwrapping | `Map(f)` for the value, `MapError(f)` for the error, `Bind(f)` to chain a call that returns another `Result`, `BindError(f)` to recover from an error with such a call |
 | Compare | `==`, `!=`, `Equals`, `GetHashCode`; usable as a dictionary key |
 | Success without data | `Success.Value` as the value of `Result<Success, E>` |
 

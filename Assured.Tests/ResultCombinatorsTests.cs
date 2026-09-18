@@ -4,6 +4,7 @@ public class ResultCombinatorsTests
 {
     private static readonly Func<int, int> Increment = v => v + 1;
     private static readonly Func<int, Result<int, string>> Wrap = v => Result<int, string>.Value(v);
+    private static readonly Func<string, Result<int, string>> Rewrap = e => Result<int, string>.Error(e);
     private static readonly Func<string, string> Same = e => e;
     private static readonly Func<int, int> Identity = v => v;
     private static readonly Func<string, int> Zero = _ => 0;
@@ -193,6 +194,69 @@ public class ResultCombinatorsTests
     }
 
     [Fact]
+    public void BindError_OnError_ReturnsNextValue()
+    {
+        var result = Result<int, string>.Error("boom");
+
+        Assert.Equal(Result<int, int>.Value(4), result.BindError(e => Result<int, int>.Value(e.Length)));
+    }
+
+    [Fact]
+    public void BindError_OnError_ReturnsNextError()
+    {
+        var result = Result<int, string>.Error("boom");
+
+        Assert.Equal(Result<int, int>.Error(4), result.BindError(e => Result<int, int>.Error(e.Length)));
+    }
+
+    [Fact]
+    public void BindError_OnNullError_CallsNextWithNull()
+    {
+        var result = Result<int, string?>.Error(null);
+
+        Assert.Equal(Result<int, bool>.Error(true), result.BindError(e => Result<int, bool>.Error(e is null)));
+    }
+
+    [Fact]
+    public void BindError_OnValue_KeepsValueWithoutCallingNext()
+    {
+        var result = Result<int, string>.Value(5);
+        var called = false;
+
+        var bound = result.BindError(_ => { called = true; return Result<int, int>.Error(0); });
+
+        Assert.Equal(Result<int, int>.Value(5), bound);
+        Assert.False(called);
+    }
+
+    [Fact]
+    public void BindError_OnDefault_StaysDefault()
+    {
+        var result = default(Result<int, string>);
+
+        Assert.Equal(default, result.BindError(_ => Result<int, int>.Value(0)));
+    }
+
+    [Fact]
+    public void BindError_Chain_StopsAtFirstValue()
+    {
+        var log = new List<string>();
+
+        Result<int, string> Source(string name, bool fail)
+        {
+            log.Add(name);
+            return fail ? name : name.Length;
+        }
+
+        var result = Source("a", true)
+            .BindError(_ => Source("bb", false))
+            .BindError(_ => Source("ccc", false));
+
+        Assert.Equal(2, result.UnwrapValue());
+        Assert.Equal(["a", "bb"], log);
+    }
+
+    [Fact]
     public void Combinators_DoNotAllocate()
     {
         var result = Result<int, string>.Value(7);
@@ -201,11 +265,11 @@ public class ResultCombinatorsTests
         // Delegates are created once above, so the loop measures only the library's code path.
         // Warm up so that tiered compilation is already in place.
         for (var i = 0; i < 1000; i++)
-            sum += result.Map(Increment).MapError(Same).Bind(Wrap).Match(Identity, Zero);
+            sum += result.Map(Increment).MapError(Same).Bind(Wrap).BindError(Rewrap).Match(Identity, Zero);
 
         var before = GC.GetAllocatedBytesForCurrentThread();
         for (var i = 0; i < 100_000; i++)
-            sum += result.Map(Increment).MapError(Same).Bind(Wrap).Match(Identity, Zero);
+            sum += result.Map(Increment).MapError(Same).Bind(Wrap).BindError(Rewrap).Match(Identity, Zero);
         var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
 
         // Any allocation on the hot path costs at least 24 bytes per iteration; a small constant is runtime noise.
